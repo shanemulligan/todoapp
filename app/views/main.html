@@ -1,0 +1,194 @@
+<div class="container">
+  <!-- <h2>My todos</h2> 
+ <!--<div linear-chart chart-data="salesData"></div> -->
+  <div class = "forceFieldChart" force-field-chart todo-data="todoData"></div> 
+    <div id="todoModal2" ng-app="todoApp" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="false">  
+        <div class="modal-dialog">
+            <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span>
+                    <span class="sr-only">Close</span>
+                </button>
+                <h4 class="modal-title" ng-show="currentToDo.status == 'NEW'">New Task</h4>
+                <h4 class="modal-title" ng-show="currentToDo.status == 'Open'">Task</h4>     
+            </div>
+            <div class="modal-body">
+                <form role="form">
+                    <div class="form-group">
+                        <label for="name">Task Description</label>
+                        <textarea class="form-control" rows="3" ng-model="currentToDo.name">{{currentToDo.name}}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="name">Aligned to</label>
+                        <div class="btn-group" dropdown is-open="status.isopen">
+                          <button type="button" class="btn btn-default dropdown-toggle" ng-disabled="disabled"> 
+                              {{currentToDo.findNodeName(currentToDo.sourceRefId)||'Select a Goal'}} <span class="caret"></span>
+                          </button>
+                          <ul id= "childElement" class="dropdown-menu" role="menu"></ul>
+                        </div>
+                    </div>
+                </form>
+                <label>
+                    <input type="checkbox"> Check when complete.
+                </label>
+
+                <button class="btn btn-default" ng-click="isCollapsed = !isCollapsed">
+                    Set Date or Repeats
+                </button>                                       
+                <hr>
+                <div collapse="isCollapsed">
+                    <div class="well well-lg">
+                        <div class="row">
+                            <div class="col-md-5">Occurs every:</div>
+                            <div class="col-md-7"></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-2">
+                              <input type="number" class="form-control" ng-model="myInterval" placeholder="1">
+                            </div>
+                            <div class="col-md-3">
+                                <div class="btn-group" dropdown >
+                                  <button type="button" class="btn btn-default dropdown-toggle " style= "width : 100%" data-toggle="dropdown"> 
+                                    {{timeframe || 'Week(s)'}} <span class="caret"></span>
+                                  </button>
+                                  <ul class="dropdown-menu" role="menu" ng-model="timeframe">
+                                    <li ><a ng-click="log('Days(s)')">Day(s)</a></li>
+                                    <li ng-click="log('Week(s)')"><a>Week(s)</a></li>
+                                    <li ng-click="log('Month(s)')"><a>Month(s)</a></li>
+                                    <li ng-click="log('Year(s)')"><a>Years(s)</a></li>
+                                  </ul>
+                                </div>
+                            </div>  
+                      </div> 
+                      <div class="row">
+                            <div class = "col-md-12">On:</div>
+                      </div>
+                      <div class= "row" ng-show = "timeframe == 'Days(s)'">
+                        <div class = "col-md-12">
+                            <div class="btn-group">
+                                <label class="btn btn-primary" ng-model="checkModel.Monday" btn-checkbox>Mon</label>
+                                <label class="btn btn-primary" ng-model="checkModel.Tuesday" btn-checkbox>Tues</label>
+                                <label class="btn btn-primary" ng-model="checkModel.Wednesday" btn-checkbox>Wed</label>
+                                <label class="btn btn-primary" ng-model="checkModel.Thursday" btn-checkbox>Thurs</label>
+                                <label class="btn btn-primary" ng-model="checkModel.Friday" btn-checkbox>Fri</label>
+                                <label class="btn btn-primary" ng-model="checkModel.Saturday" btn-checkbox>Sat</label>    
+                                <label class="btn btn-primary" ng-model="checkModel.Sunday" btn-checkbox>Sun</label> 
+                            </div> 
+                        </div>
+                    </div>
+                    <hr/>
+                    <div class="row" ng-show = "timeframe == 'Months(s)'">
+                        <div class="col-md-2">
+                            <div class="btn-group" dropdown >
+                              <button type="button" class="btn btn-default dropdown-toggle " style= "width : 100%" data-toggle="dropdown"> 
+                                {{timeframe2 || 'First'}} <span class="caret"></span>
+                              </button>
+                              <ul class="dropdown-menu" role="menu" ng-model="timeframe">
+                                <li ><a ng-click="log2('First')">First</a></li>
+                                <li ng-click="log2('Second')"><a>Second</a></li>
+                                <li ng-click="log2('Third')"><a>Third</a></li>
+                                <li ng-click="log2('Last')"><a>Last</a></li>
+                              </ul>
+                            </div> 
+                        </div>
+                        <div class="col-md-3">
+                            <div class="btn-group" dropdown >
+                              <button type="button" class="btn btn-default dropdown-toggle " style= "width : 100%" data-toggle="dropdown"> 
+                                {{timeframe3 || 'Friday'}} <span class="caret"></span>
+                              </button>
+                              <ul class="dropdown-menu" role="menu" ng-model="timeframe">
+                                <li ><a ng-click="log3('Monday')">Monday</a></li>
+                                <li ng-click="log3('Tuesday')"><a>Tuesday</a></li>
+                                <li ng-click="log3('Wednesday')"><a>Wednesday</a></li>
+                                <li ng-click="log3('Thursday')"><a>Thursday</a></li>
+                                <li ng-click="log3('Friday')"><a>Friday</a></li>
+                                <li ng-click="log3('Saturday')"><a>Saturday</a></li>
+                                <li ng-click="log3('Sunday')"><a>Sunday</a></li>  
+                              </ul>
+                            </div>
+                        </div>  
+                    </div>
+                    <div class= "row" ng-show = "timeframe == 'Months(s)'">
+                        <div class = "col-md-12">
+                            <div class="btn-group">
+                                <label class="btn btn-primary" ng-model="DayInMonth.1" btn-checkbox>01</label>
+                                <label class="btn btn-primary" ng-model="DayInMonth.2" btn-checkbox>02</label>
+                                <label class="btn btn-primary" ng-model="DayInMonth.3" btn-checkbox>03</label>
+                                <label class="btn btn-primary" ng-model="DayInMonth.4" btn-checkbox>04</label>
+                                <label class="btn btn-primary" ng-model="DayInMonth.5" btn-checkbox>05</label>
+                                <label class="btn btn-primary" ng-model="DayInMonth.6" btn-checkbox>06</label>
+                                <label class="btn btn-primary" ng-model="DayInMonth.7" btn-checkbox>07</label>
+                                <label class="btn btn-primary" ng-model="DayInMonth.8" btn-checkbox>08</label>
+                                <label class="btn btn-primary" ng-model="DayInMonth.9" btn-checkbox>09</label>
+                                <label class="btn btn-primary" ng-model="DayInMonth.10" btn-checkbox>10</label>
+                                <label class="btn btn-primary" ng-model="DayInMonth.11" btn-checkbox>11</label>
+                                <label class="btn btn-primary" ng-model="DayInMonth.12" btn-checkbox>12</label>
+                                <label class="btn btn-primary" ng-model="DayInMonth.13" btn-checkbox>13</label>
+                                <label class="btn btn-primary" ng-model="DayInMonth.14" btn-checkbox>14</label>
+                                <label class="btn btn-primary" ng-model="DayInMonth.15" btn-checkbox>15</label>
+                                <label class="btn btn-primary" ng-model="DayInMonth.16" btn-checkbox>16</label>
+                                <label class="btn btn-primary" ng-model="DayInMonth.17" btn-checkbox>17</label>
+                                <label class="btn btn-primary" ng-model="DayInMonth.18" btn-checkbox>18</label>
+                                <label class="btn btn-primary" ng-model="DayInMonth.19" btn-checkbox>19</label>
+                                <label class="btn btn-primary" ng-model="DayInMonth.20" btn-checkbox>20</label>
+                                <label class="btn btn-primary" ng-model="DayInMonth.21" btn-checkbox>21</label>
+                                <label class="btn btn-primary" ng-model="DayInMonth.22" btn-checkbox>22</label>
+                                <label class="btn btn-primary" ng-model="DayInMonth.23" btn-checkbox>23</label>
+                                <label class="btn btn-primary" ng-model="DayInMonth.24" btn-checkbox>24</label>
+                                <label class="btn btn-primary" ng-model="DayInMonth.25" btn-checkbox>25</label>
+                                <label class="btn btn-primary" ng-model="DayInMonth.26" btn-checkbox>26</label>     
+                                <label class="btn btn-primary" ng-model="DayInMonth.27" btn-checkbox>27</label>
+                                <label class="btn btn-primary" ng-model="DayInMonth.28" btn-checkbox>28</label>
+                                <label class="btn btn-primary" ng-model="DayInMonth.29" btn-checkbox>29</label>
+                                <label class="btn btn-primary" ng-model="DayInMonth.30" btn-checkbox>30</label>
+                                <label class="btn btn-primary" ng-model="DayInMonth.31" btn-checkbox>31</label>
+                            </div> 
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div style="display:inline-block; min-height:290px;" ng-show = "timeframe == 'Year(s)'">
+                            <datepicker ng-model="dt" min-date="minDate" show-weeks="true" class="well well-sm">    
+                            </datepicker>
+                        </div>       
+                    </div>
+                </div>
+            </div>
+        </div> <!-- modal body -->
+        <div class="modal-footer">
+            <button type="button" class="btn btn-danger pull-left" ng-click="removeTodo({{currentToDo.id}})" data-dismiss="modal" >
+                Delete
+            </button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">
+                Close
+            </button>
+            <button type="button" class="btn btn-primary" ng-click="saveTodo($index)" data-dismiss="modal">    
+                Save &amp; Close
+            </button>
+        </div>
+    </div><!-- /.modal-content -->
+</div><!-- /.modal-dialog -->
+    </div>
+  <!-- Todos input -->
+  <form role="form" ng-submit="addTodo()">
+    <div class="row">
+      <div class="input-group">
+        <input type="text" ng-model="todo" placeholder="What needs to be done?" class="form-control">
+        <span class="input-group-btn">
+          <input type="submit" class="btn btn-primary" value="Add">
+        </span>
+      </div>
+    </div>
+  </form>
+  <p></p>
+
+    <!-- Todos list -->
+    <div ui-sortable ng-model="todos">
+      <p class="input-group" ng-repeat="todo in todos" style="padding:5px 10px; cursor: move;">
+        <input type="text" ng-model="todo" class="form-control">
+        <span class="input-group-btn">
+          <button class="btn btn-danger"  aria-label="Remove">X</button>
+        </span>
+      </p>
+    </div>
+</div>
