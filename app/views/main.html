@@ -23,9 +23,15 @@
                         <label for="name">Aligned to</label>
                         <div class="btn-group" dropdown is-open="status.isopen">
                           <button type="button" class="btn btn-default dropdown-toggle" ng-disabled="disabled"> 
-                              {{currentToDo.findNodeName(currentToDo.sourceRefId)||'Select a Goal'}} <span class="caret"></span>
+                             {{findParentNodeName()||'Select a Goal'}} 
+                              <span class="caret"></span>
                           </button>
                           <ul id= "childElement" class="dropdown-menu" role="menu"></ul>
+                            <li ng-repeat="item in list">
+                              <a ng-click="$parent.current = item; ">
+                                Dynamic set {{item}}
+                              </a>
+                            </li>
                         </div>
                     </div>
                 </form>

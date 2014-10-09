@@ -25,7 +25,8 @@ app.directive('forceFieldChart', function () {
         var a = canvasWidthPx/2.05;
         var b = canvasHeightPx/2.05;
         
-        var elipse1 = svg.append("ellipse").attr("cx", canvasWidthPx/2).attr("cy", canvasHeightPx/2).attr("rx", a).attr("ry", b)
+        var elipse1 = svg.append("ellipse")
+                        .attr("cx", canvasWidthPx/2).attr("cy", canvasHeightPx/2).attr("rx", a).attr("ry", b)
                         .style("fill", "darkgrey").style("stroke-width","1").style("stroke", "black");
         var rectangle = svg.append("ellipse").attr("cx", canvasWidthPx/2).attr("cy", canvasHeightPx/2)
                         .attr("rx", a*.85).attr("ry", b*.85)
@@ -79,8 +80,10 @@ app.directive('forceFieldChart', function () {
         var update =  function () {               
             for(var i=0;i<$scope.todoData.nodes.length;i++){
                 for(var j=0;j<$scope.todoData.links.length;j++){
-                    if ($scope.todoData.links[j].sourceRefId == $scope.todoData.nodes[i].id) $scope.todoData.links[j].source=i;
-                    if ($scope.todoData.links[j].targetRefId == $scope.todoData.nodes[i].id) $scope.todoData.links[j].target=i; 
+                    if ($scope.todoData.links[j].sourceRefId == $scope.todoData.nodes[i].id)    
+                        $scope.todoData.links[j].source=i;
+                    if ($scope.todoData.links[j].targetRefId == $scope.todoData.nodes[i].id) 
+                        $scope.todoData.links[j].target=i; 
                 }
                 if ($scope.todoData.nodes[i].fixed == true && $scope.todoData.nodes[i].name == "ROOT")
                 {
@@ -159,7 +162,7 @@ app.directive('forceFieldChart', function () {
                             $scope.currentToDo.sourceRefId = d.sourceRefId;//});
                             $scope.currentToDo.targetRefId = d.targetRefId;
                             $scope.currentToDo.target = d.target;
-                            $scope.currentToDo.source
+                            $scope.currentToDo.source = d.source;
                            // $scope.currentToDo.description = d.name;
                             $scope.$apply();
                             $('#todoModal2').modal('show');
