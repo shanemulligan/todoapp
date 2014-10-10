@@ -12,8 +12,8 @@ app.directive('forceFieldChart', function () {
                 deg2rad = Math.PI/180,
                 rad2deg = 180/Math,
                 PIcanvasHeightPx, canvasWidthPx, 
-                affectedNodes = [{"ElementType":"Vision", "scalefactor":1.00, "nodes":[]}, 
-                                 {"ElementType":"Goal",   "scalefactor":0.85, "nodes":[]}];
+                affectedNodes = [{"ElementType":"Vision", "scalefactor":8.00, "nodes":[]}, 
+                                 {"ElementType":"Goal",   "scalefactor":40.00, "nodes":[]}];
 
         var svg = d3.select(".forceFieldChart").append("svg")
                 .attr("width", width)
@@ -22,26 +22,50 @@ app.directive('forceFieldChart', function () {
            
         canvasWidthPx   =   $(".mysvg").width();
         canvasHeightPx  =   $(".mysvg").height();
-        var a = canvasWidthPx/2.05;
-        var b = canvasHeightPx/2.05;
+        var a = canvasWidthPx/2;
+        var b = canvasHeightPx/2;
         
         var elipse1 = svg.append("ellipse")
-                        .attr("cx", canvasWidthPx/2).attr("cy", canvasHeightPx/2).attr("rx", a).attr("ry", b)
-                        .style("fill", "darkgrey").style("stroke-width","1").style("stroke", "black");
-        var rectangle = svg.append("ellipse").attr("cx", canvasWidthPx/2).attr("cy", canvasHeightPx/2)
-                        .attr("rx", a*.85).attr("ry", b*.85)
-                        .style("fill", "lightgrey").style("stroke-width","1").style("stroke", "grey")
+                        .attr("cx", canvasWidthPx/2).attr("cy", canvasHeightPx/2)
+                        .attr("rx", a).attr("ry", b)
+                        .style("fill", "darkgrey").style("stroke-width","1").style("stroke", "black")
+                        .on('click', function(d) {
+                                $scope.currentToDo.id = "999";           // sgmullig: need to calculate the maximum id
+                                $scope.currentToDo.status = "NEW";
+                                $scope.currentToDo.name = "New Task";
+                                $scope.currentToDo.type = "VISION";
+                                $scope.currentToDo.description = "";
+                                $('#todoModal2').modal('show');
+                            });
+          
+        var elipse2 = svg.append("ellipse")
+                        .attr("cx", canvasWidthPx/2).attr("cy", canvasHeightPx/2)
+                        .attr("rx", a-(2*circleRadius)).attr("ry", b-(2*circleRadius))
+                        .style("fill", "white").style("stroke-width","1").style("stroke", "black");  
+          
+        var elipse3 = svg.append("ellipse")
+                        .attr("cx", canvasWidthPx/2).attr("cy", canvasHeightPx/2)
+                        .attr("rx", a-(4*circleRadius)).attr("ry", b-(4*circleRadius))
+                        .style("fill", "darkgrey").style("stroke-width","1").style("stroke", "black")
+                        .on('click', function(d) {        
+                                $scope.currentToDo.id = "999";           // sgmullig: need to calculate the maximum id
+                                $scope.currentToDo.status = "NEW";
+                                $scope.currentToDo.title = "New Task";
+                                $scope.currentToDo.type = "GOAL";
+                                $scope.currentToDo.description = "";
+                                $('#todoModal2').modal('show');
+                            });
+          
+        var eclipse4 = svg.append("ellipse").attr("cx", canvasWidthPx/2).attr("cy", canvasHeightPx/2)
+                        .attr("rx", a-(6*circleRadius)).attr("ry", b-(6*circleRadius))
+                        .style("fill", "white").style("stroke-width","1").style("stroke", "black")
                         .on('click', function(d) {
                                 $scope.currentToDo.id = "999";           // sgmullig: need to calculate the maximum id
                                 $scope.currentToDo.status = "NEW";
                                 $scope.currentToDo.title = "New Task";
+                                $scope.currentToDo.type = "item";
                                 $scope.currentToDo.description = "";
-
                                 $('#todoModal2').modal('show');
-                                //alert("New Item Alert");
-                                //removeNode(d.id);
-                                //$scope.$apply();
-                                //update();
                             });
         
         var findNode = function(id) {
@@ -104,8 +128,8 @@ app.directive('forceFieldChart', function () {
                 for (z=0; z<affectedNodes.length; z++)
                 {
                     for(i=0;i<affectedNodes[z].nodes.length;i++){
-                        var a = (canvasWidthPx*affectedNodes[z].scalefactor)/2.05;
-                        var b = (canvasHeightPx*affectedNodes[z].scalefactor)/2.05;
+                        var a = (canvasWidthPx/2)-affectedNodes[z].scalefactor;
+                        var b = (canvasHeightPx/2)-affectedNodes[z].scalefactor;
                         var tanRad = Math.tan(radian);
                         if ( (radian >= 0 && radian < deg2rad*90) || (radian > deg2rad*270 && radian <= deg2rad*360))
                         {
