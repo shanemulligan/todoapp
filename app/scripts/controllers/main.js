@@ -6,6 +6,7 @@ app.controller('MainCtrl', function ($scope, localStorageService, todosFactory) 
     $scope.isCollapsed = true;
     $scope.todoData = [];
     $scope.currentToDo = [];
+    $scope.list = [];
 
     function init() {
         $scope.todoData = todosFactory.getTodos();
@@ -20,11 +21,14 @@ app.controller('MainCtrl', function ($scope, localStorageService, todosFactory) 
     $scope.addTodo = function () {
         $scope.todos.push($scope.todo);
         $scope.todo = '';
-    }; 
-    */
+    }; */
 
     $scope.removeTodo = function (index) {
-        $scope.todoData = todosFactory.deleteTodo(index, $scope.todoData);
+        var todDataTemp = $scope.todoData;
+        //var index = $scope.currentToDo.id;
+       // $scope.$apply(function(){ 
+            $scope.todoData = todosFactory.deleteTodo(index, todDataTemp);
+      //  });
     };
 
     $scope.findNodeName = function (id) {
@@ -44,29 +48,26 @@ app.controller('MainCtrl', function ($scope, localStorageService, todosFactory) 
         };
     };
     $scope.findParentNodeName = function() {
-        console.log("The SourceRefId is" + $scope.currentToDo.id);
         for (var i=0;i<$scope.todoData.links.length;i++) {
-            if ($scope.todoData.links[i].targetRefId == $scope.currentToDo.id){
+            if ($scope.todoData.links[i].sourceRefId == $scope.currentToDo.id){
                 for (var j=0; j<$scope.todoData.nodes.length;j++)
                 {
-                    if ($scope.todoData.nodes[j].id == $scope.todoData.links[i].sourceRefId)
+                    if ($scope.todoData.nodes[j].id == $scope.todoData.links[i].targetRefId)
                     return $scope.todoData.nodes[j].name;
                 }
             }
         };
-    };
-      
+    };    
     
      var addLink = function (source, target, value) {
         $scope.todoData.links.push(
-            {
-                "id":99,
+            {   "id":99,
                 "value":value,
                 "sourceRefId":source,
                 "targetRefId":target, 
                 "source":0, 
                 "target":0});
-        };
+    };
  
       
       var findNodeIndex = function(id) {
@@ -76,13 +77,25 @@ app.controller('MainCtrl', function ($scope, localStorageService, todosFactory) 
                 }
             };
         };  
+    
+    $scope.updateTarget =  function(id, targetId){
+            var i = 0;
+            while (i < $scope.todoData.links.length) {
+                if ($scope.todoData.links[i]['sourceRefId'] == id)
+                {
+                        $scope.todoData.links[i]['targetRefId'] = targetId;
+                    
+                }
+                else i++;
+            }
+    };
 
     $scope.saveTodo = function(id) {
         
         if ($scope.currentToDo.status == "NEW") {
             alert("this is a new insert event");
             $scope.todoData.nodes.push(
-                {"id":$scope.currentToDo.id,"type":"item","name":$scope.currentToDo.name,"status":"Open","group":2, "fixed":false});
+                {"id":$scope.currentToDo.id,"type":"item","name":$scope.currentToDo.name,"status":"Open","group":2, "fixed":false, "x":0, "y":0 });
             addLink(0,$scope.currentToDo.id, 1);
             addLink($scope.currentToDo.id,11, 1);           
             //addLink(
@@ -97,8 +110,6 @@ app.controller('MainCtrl', function ($scope, localStorageService, todosFactory) 
       
       
   $scope.timeframe;
-      
-      
 
   $scope.status = {
     isopen: false
@@ -108,9 +119,10 @@ app.controller('MainCtrl', function ($scope, localStorageService, todosFactory) 
     console.log('Dropdown is now: ', open);
 
   };
-      $scope.timeframe2;
-      $scope.timeframe3;
-$scope.log = function(thisTimeFrame) {
+  $scope.timeframe2;
+  $scope.timeframe3;
+    
+  $scope.log = function(thisTimeFrame) {
       $scope.timeframe = thisTimeFrame;
       //scope.timeframe.$apply();
   };
@@ -128,11 +140,40 @@ $scope.log = function(thisTimeFrame) {
     $scope.status.isopen = !$scope.status.isopen;
   };
       
-    for (var i=0; i < $scope.todoData.nodes.length; i++) 
+    /*for (var i=0; i < $scope.todoData.nodes.length; i++) 
     {
         if ($scope.todoData.nodes[i].type == "GOAL") 
         $('#childElement').append('<li><a>' + $scope.todoData.nodes[i].name + '</a></li>');
-     
+    }*/
+    //$scope.currentToDo.possibleTargetRefId = getParentRefIDs(d.id, d.targetRefId);
+    $scope.getParentRefIDs = function(id, parentRefId)
+    {            
+        var mylist = [];
+        for (var i=0; i < $scope.todoData.nodes.length; i++) 
+        {
+            if ($scope.todoData.nodes[i].type == $scope.todoData.nodes[parentRefId].type) 
+            {
+                mylist.push({"name": $scope.todoData.nodes[i].name, "id": $scope.todoData.nodes[i].id});       
+            }
+        }
+        return mylist;
+    };
+    for (var i=0; i < $scope.todoData.nodes.length; i++) 
+    {
+        if ($scope.todoData.nodes[i].type == "GOAL") 
+       // $('#childElement').append('<li><a>' + $scope.todoData.nodes[i].name + '</a></li>');
+        {$scope.list.push($scope.todoData.nodes[i]);
+        console.log( $scope.list[i] +"\n" );}
+        
+        for (var i=0;i<$scope.todoData.links.length;i++) {
+            if ($scope.todoData.links[i].sourceRefId == $scope.currentToDo.id){
+                for (var j=0; j<$scope.todoData.nodes.length;j++)
+                {
+                    if ($scope.todoData.nodes[j].id == $scope.todoData.links[i].targetRefId)
+                    return $scope.todoData.nodes[j].name;
+                }
+            }
+        };
     }
       
   });

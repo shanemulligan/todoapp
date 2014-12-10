@@ -9,7 +9,7 @@ app.directive('forceFieldChart', function () {
             color = d3.scale.category20(),
             circleRadius = 8,
             radian = 0,
-            link, node,cloneData,
+            link, nodes,cloneData,
             force,
             deg2rad = Math.PI/180,
             rad2deg = 180/Math,
@@ -108,32 +108,30 @@ app.directive('forceFieldChart', function () {
                 }
             };
         };         
-        var update =  function () {    
-             console.log(JSON.stringify(cloneData)); 
-             svg.selectAll('g').remove();
-            for(var i=0;i<cloneData.nodes.length;i++){
-                for(var j=0;j<cloneData.links.length;j++){
-                    if (cloneData.links[j].sourceRefId == cloneData.nodes[i].id)    
-                        cloneData.links[j].source=i;
-                    if (cloneData.links[j].targetRefId == cloneData.nodes[i].id) 
-                        cloneData.links[j].target=i; 
+        var update =  function () {               
+            for(var i=0;i<$scope.todoData.nodes.length;i++){
+                for(var j=0;j<$scope.todoData.links.length;j++){
+                    if ($scope.todoData.links[j].sourceRefId == $scope.todoData.nodes[i].id)    
+                        $scope.todoData.links[j].source=i;
+                    if ($scope.todoData.links[j].targetRefId == $scope.todoData.nodes[i].id) 
+                        $scope.todoData.links[j].target=i; 
                 }
-                if (cloneData.nodes[i].fixed == true && cloneData.nodes[i].name == "ROOT")
+                if ($scope.todoData.nodes[i].fixed == true && $scope.todoData.nodes[i].name == "ROOT")
                 {
-                    cloneData.nodes[i].x = canvasWidthPx/2;
-                    cloneData.nodes[i].y = canvasHeightPx/2;
+                    $scope.todoData.nodes[i].x = canvasWidthPx/2;
+                    $scope.todoData.nodes[i].y = canvasHeightPx/2;
                 } 
-                if (cloneData.nodes[i].fixed == true && cloneData.nodes[i].type == "VISION")
+                if ($scope.todoData.nodes[i].fixed == true && $scope.todoData.nodes[i].type == "VISION")
                 {
-                    affectedNodes[0].nodes.push(cloneData.nodes.indexOf( cloneData.nodes[i] ));
+                    affectedNodes[0].nodes.push($scope.todoData.nodes.indexOf( $scope.todoData.nodes[i] ));
                 } 
-                else if (cloneData.nodes[i].fixed == true && cloneData.nodes[i].type == "GOAL")
+                else if ($scope.todoData.nodes[i].fixed == true && $scope.todoData.nodes[i].type == "GOAL")
                 {
-                    affectedNodes[1].nodes.push(cloneData.nodes.indexOf( cloneData.nodes[i] ));
+                    affectedNodes[1].nodes.push($scope.todoData.nodes.indexOf( $scope.todoData.nodes[i] ));
                 }
             }
 
-            var orderNodeCoord = function(){
+            var orderNodeCoord = function(nodes, affectedNodes){
                 for (z=0; z<affectedNodes.length; z++)
                 {
                     for(i=0;i<affectedNodes[z].nodes.length;i++){
@@ -142,15 +140,15 @@ app.directive('forceFieldChart', function () {
                         var tanRad = Math.tan(radian);
                         if ( (radian >= 0 && radian < deg2rad*90) || (radian > deg2rad*270 && radian <= deg2rad*360))
                         {
-                            cloneData.nodes[affectedNodes[z].nodes[i]].x = canvasWidthPx/2 +
+                            $scope.todoData.nodes[affectedNodes[z].nodes[i]].x = canvasWidthPx/2 +
                                                                     (a*b)/(Math.sqrt( (b*b)+(a*a*tanRad*tanRad)));
-                            cloneData.nodes[affectedNodes[z].nodes[i]].y = canvasHeightPx/2 +
+                            $scope.todoData.nodes[affectedNodes[z].nodes[i]].y = canvasHeightPx/2 +
                                                                     (a*b*tanRad)/(Math.sqrt( (b*b)+(a*a*tanRad*tanRad)));
                         }
                         else{
-                            cloneData.nodes[affectedNodes[z].nodes[i]].x = canvasWidthPx/2 -
+                            $scope.todoData.nodes[affectedNodes[z].nodes[i]].x = canvasWidthPx/2 -
                                                                     (a*b)/(Math.sqrt( (b*b)+(a*a*tanRad*tanRad)));;
-                            cloneData.nodes[affectedNodes[z].nodes[i]].y = canvasHeightPx/2 -
+                            $scope.todoData.nodes[affectedNodes[z].nodes[i]].y = canvasHeightPx/2 -
                                                                     (a*b*tanRad)/(Math.sqrt( (b*b)+(a*a*tanRad*tanRad)));
                         }
                         radian += (2*Math.PI)/affectedNodes[z].nodes.length;
@@ -158,19 +156,23 @@ app.directive('forceFieldChart', function () {
                     }
                 } 
             }
-            orderNodeCoord();
+            orderNodeCoord($scope.todoData.nodes, affectedNodes);
 
-            force = d3.layout.force()
+             force = d3.layout.force()
                         .charge(-320)
                         .linkDistance(30)
-                        .size([$(".mysvg").width(), height])
-                        .nodes(cloneData.nodes)
-                        .links(cloneData.links)
-                        .start();
+                        .size([$(".mysvg").width(), height]);
+                //        .nodes($scope.todoData.nodes)
+                 //       .links($scope.todoData.links)
+                //        .start();
+                  console.log(JSON.stringify($scope.todoData));
+
             
-            link = svg.append("g").selectAll(".link")
-                .data(cloneData.links)
-                .enter().append("line")
+            
+            link = svg.selectAll(".link")
+                .data($scope.todoData.links);
+            
+           link.enter().append("line")
                 .attr("class", "link")
                 .style("stroke-width", function(d) { return Math.sqrt(d.value); })
                 .style("stroke", function(d) {
@@ -179,35 +181,32 @@ app.directive('forceFieldChart', function () {
                     //} else return 'red';
                     return 'red';
                 });
-           // link.exit().remove();
+            link.exit().remove();
             
-            node = svg.append("g").selectAll(".node")
-                        .data(cloneData.nodes).enter()  
-                        //added
-                        .append('g')
-                        .classed('gnode', true);
-            
-            var snode = node
-                        .append("circle")
+             node = svg.selectAll(".node")
+                        .data($scope.todoData.nodes)
+                        .enter().append("g")
                         .attr("class", "node")
-                        .attr("r", 8)
-                        .call(force.drag)
-                        .on('click', function(d) {
-                            $scope.$apply(function(){
-                                $scope.currentToDo.id = d.id;
-                                $scope.currentToDo.status = d.status;
-                                $scope.currentToDo.name = d.name;//"This is a new test";
-                                $scope.currentToDo.sourceRefId = d.sourceRefId;//});
-                                $scope.currentToDo.targetRefId = d.targetRefId;
-                                $scope.currentToDo.target = d.target;
-                                $scope.currentToDo.source = d.source;
-                                $scope.currentToDo.possibleTargetRefId = getParentRefIDs(d.id, d.type);//d.targetRefId);
-                            });
-                            $('#todoModal2').modal('show');
+                        //.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })          
+                        .call(force.drag);
 
-                        })
-                        .style("fill", "white");
-            
+            node.append("circle")
+                .attr("r", 8)
+                .call(force.drag)
+                .on('click', function(d) {
+                    $scope.$apply(function(){
+                        $scope.currentToDo.id = d.id;
+                        $scope.currentToDo.status = d.status;
+                        $scope.currentToDo.name = d.name;"This is a new test";
+                        $scope.currentToDo.sourceRefId = d.sourceRefId;//});
+                        $scope.currentToDo.targetRefId = d.targetRefId;
+                        $scope.currentToDo.target = d.target;
+                        $scope.currentToDo.source = d.source;
+                    });
+                    $('#todoModal2').modal('show');
+
+                })
+            .style("fill", "white");
             var textnode = node.append("text")
                 .attr("x", 12)
                 .attr("dy", ".35em")
@@ -225,20 +224,23 @@ app.directive('forceFieldChart', function () {
                 //    .attr("cy", function(d) { return d.y; });
             }); 
             
-            affectedNodes = [{"ElementType":"Vision", "scalefactor":8, "nodes":[]}, 
-                             {"ElementType":"Goal",   "scalefactor":40, "nodes":[]}];
+            force.nodes($scope.todoData.nodes)
+                 .links($scope.todoData.links)
+                 .start();
+            
+
+
+            affectedNodes = [{"ElementType":"Vision", "scalefactor":1.00, "nodes":[]}, 
+                             {"ElementType":"Goal",   "scalefactor":0.85, "nodes":[]}];
             radian = 0;
       };
-          
-     // console.log(JSON.stringify($scope.todoData));
-      cloneData = clone($scope.todoData);
-      update();
-         // codeChange();
+      
+      //update();
+          codeChange();cloneData = clone(allData);
     
       function clearNodes(){
-           node = [];
-           link = [];
-          //cloneData = {};
+           nodes = {};
+           links = [];
            force.start();
            d3.timer(force.resume);  
           
@@ -246,28 +248,11 @@ app.directive('forceFieldChart', function () {
           
     function codeChange() {
         selectedCode = this.value;
-             
        // cloneData = clone(allData); // added
-        clearNodes();
         cloneData = clone($scope.todoData);
+        clearNodes();
         update();
     }
-          
-    function getParentRefIDs(id, type)
-    {            
-        var mylist = [];
-        for (var i=0; i < $scope.todoData.nodes.length; i++) 
-        {
-            if ( type == "GOAL" && $scope.todoData.nodes[i].type == "VISION") 
-            {
-                mylist.push({"name": $scope.todoData.nodes[i].name, "id": $scope.todoData.nodes[i].id});       
-            }
-            else if ( type == "item" && $scope.todoData.nodes[i].type == "GOAL") {
-               mylist.push({"name": $scope.todoData.nodes[i].name, "id": $scope.todoData.nodes[i].id}); 
-            }
-        }
-        return mylist;
-    };
       
       $('#todoModal2').on('hidden.bs.modal', function () {
           codeChange();
