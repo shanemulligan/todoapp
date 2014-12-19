@@ -23,16 +23,14 @@
                         <label for="name">Aligned to</label>
                         <div class="btn-group" dropdown is-open="status.isopen">
                           <button type="button" class="btn btn-default dropdown-toggle" ng-disabled="disabled"> 
-                             {{findParentNodeName()||'Select a Goal'}} 
+                             {{currentToDo.parent.name || findParentNodeName()||'Select a Goal'}} 
+                              <!--{{'Select a Goal'}}-->  
                               <span class="caret"></span>
                           </button>
                           <ul id= "child_Element" class="dropdown-menu" role="menu">
-                                <li><a>testestestes</a></li>
-                              <li ng-repeat="item in  currentToDo.possibleTargetRefId">
-                              <a >
-                                {{item.name}}
-                              </a>
-                                </li>
+                              <li ng-repeat="item in  currentToDo.possibleTargetRefId" ng-click="changeParent(item)">
+                                    <a>{{item.name}}</a>
+                              </li>
                           </ul>
                         </div>
                     </div>

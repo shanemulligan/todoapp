@@ -30,6 +30,14 @@ app.controller('MainCtrl', function ($scope, localStorageService, todosFactory) 
             $scope.todoData = todosFactory.deleteTodo(index, todDataTemp);
       //  });
     };
+    $scope.changeParent = function(index){
+        for(var j=0;j<$scope.todoData.links.length;j++){
+                if ($scope.todoData.links[j].sourceRefId == $scope.currentToDo.id)
+                {
+                    $scope.todoData.links[j].targetRefId = index.id;
+                }
+        }
+    };
 
     $scope.findNodeName = function (id) {
         var i;
@@ -107,6 +115,10 @@ app.controller('MainCtrl', function ($scope, localStorageService, todosFactory) 
             $scope.todoData.nodes[$scope.currentToDo.id].name   = $scope.currentToDo.name;
         }  
     };   
+    $scope.setAction = function(item){
+     //currentToDo.possibleTargetRefId
+        $scope.currentToDo.parent = item;
+    };
       
       
   $scope.timeframe;
